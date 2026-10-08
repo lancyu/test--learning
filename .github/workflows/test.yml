@@ -1,0 +1,38 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉代码
+        uses: actions/checkout@v4
+
+      - name: 装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 装依赖
+        run: pip install pytest pyserial pytest-cov
+
+      - name: 跑测试
+        run: pytest -v
+
+  cppcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉代码
+        uses: actions/checkout@v4
+
+      - name: 装 cppcheck
+        run: sudo apt-get update && sudo apt-get install -y cppcheck
+
+      - name: 跑静态分析
+        run: cppcheck --enable=all --suppress=missingInclude src/ 2> cppcheck.txt || true
+
+      - name: 显示报告
+        run: cat cppcheck.txt
