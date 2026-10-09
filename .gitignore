@@ -10,6 +10,14 @@ htmlcov/
 .venv/
 venv/
 
+# C++ / CMake 构建产物
+build/
+cmake-build-*/
+*.o
+*.a
+*.so
+compile_commands.json
+
 # IDE
 .idea/
 .vscode/
