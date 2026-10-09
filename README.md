@@ -36,6 +36,7 @@ src/                          Python 被测代码
   serial_reader.py    pyserial 读多行
   serial_simulator.py pty 创建虚拟串口对
   udp_receiver.py     UDP 收一个包 / 发一组雷达点
+  example.cpp         ⚠️故意含 bug 的 cppcheck 演示样本，不要修、不要删（见下）
 tests/                       Python 测试
   test_radar_parser.py  解析类测试：正常 / 异常 / 边界 / 数据驱动 / fixture
   test_nmea_parser.py   NMEA 四种场景 + 边界
@@ -54,6 +55,20 @@ docs/
   mac命令练习笔记.md   macOS 终端命令练习
 reports/                   覆盖率 HTML 报告输出目录（git 已忽略内容）
 ```
+
+### ⚠️ `src/example.cpp` 是故意的坏样本
+
+它有**两个刻意留下的 bug**，用来演示 cppcheck 能扫出什么（详见 `docs/day3-notes.md`）：
+
+1. `divide(10, 0)` —— 除零
+2. `arr[10] = 1` —— `arr` 只有 5 个元素，数组越界
+
+**不要修，也不要删。** 修好了就失去演示意义。
+它同时也是 CI 的活体验证：cppcheck job 扫到它会报警告，
+`cpp_tests/` 的真代码则应该是干净的——两者一对比就知道静态分析有没有正常工作。
+
+> 它放在 `src/` 而不是 `cpp_tests/`，是因为 day3 的 CI job 只扫 `src/`。
+> 这是历史遗留的位置，两边都能扫到的情况下放哪都不影响检测。
 
 ## 快速开始
 
@@ -216,6 +231,7 @@ Day4 新增 C++ 测试后这个缺口就出现了，待补。
 
 - [x] pyserial 模拟串口收发，给串口解析函数补测试
 - [x] GTest 入门：`TEST` / `TEST_F` / `TEST_P` / `EXPECT_THROW` 全套上手
+- [x] CI 跑通：pytest job + cppcheck job（day3）
 - [ ] **给 CI 加 C++ job**：编译 GTest + 跑 ctest + cppcheck 扫 `cpp_tests/`（当前缺口）
 - [ ] 把 `pytest --cov=src` 接进 CI，产出覆盖率报告
 - [ ] 修 `test_nmea_parser.py::test_boundary` 里的 `try/except: pass`
